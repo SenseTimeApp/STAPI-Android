@@ -1,5 +1,6 @@
 package com.sensetime.stapi.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ public class STAPI {
 	private static final boolean DEBUG = true;
 	
 	private static final String WEBSITE_CN = "https://v1-api.visioncloudapi.com/";
+	private static final String RESPONSECODE_KEY = "responseCode"; 
 	 
 	static final private int BUFFERSIZE = 1048576;
 	static final private int TIMEOUT = 30000;
@@ -776,7 +778,7 @@ public class STAPI {
 		URL url;
 		HttpsURLConnection urlConn = null;
 		int responseCode = -1;
-//		STAPIException lfapiException = null;
+//		STAPIException apiException = null;
 		try {
 			if(DEBUG){
 	            Log.d(TAG, "post url:"+webSite+control+"/"+action);
@@ -820,13 +822,13 @@ public class STAPI {
 //	            	if(result.has(JsonStatus.REASON_KEY)){
 //	            		reason = result.get(JsonStatus.REASON_KEY).toString();
 //	            	}
-//	            	lfapiException = new STAPIException(
+//	            	apiException = new STAPIException(
 //	            			responseCode,status,reason);
-//	            	throw lfapiException;
+//	            	throw apiException;
 //	            }
 //	        }else{
-//	        	lfapiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
-//	            throw lfapiException;
+//	        	apiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
+//	            throw apiException;
 //	        }
 		    if(inputStream!=null){
 		    	inputStream.close();
@@ -886,13 +888,13 @@ public class STAPI {
 //	            	if(result.has(JsonStatus.REASON_KEY)){
 //	            		reason = result.get(JsonStatus.REASON_KEY).toString();
 //	            	}
-//	            	lfapiException = new STAPIException(
+//	            	apiException = new STAPIException(
 //	            			responseCode,status,reason);
-//	            	throw lfapiException;
+//	            	throw apiException;
 //	            }
 //	        }else{
-//	        	lfapiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
-//	            throw lfapiException;
+//	        	apiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
+//	            throw apiException;
 //	        }
 		    if(inputStream!=null){
 		    	inputStream.close();
@@ -954,13 +956,13 @@ public class STAPI {
 //	            	if(result.has(JsonStatus.REASON_KEY)){
 //	            		reason = result.get(JsonStatus.REASON_KEY).toString();
 //	            	}
-//	            	lfapiException = new STAPIException(
+//	            	apiException = new STAPIException(
 //	            			responseCode,status,reason);
-//	            	throw lfapiException;
+//	            	throw apiException;
 //	            }
 //	        }else{
-//	        	lfapiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
-//	            throw lfapiException;
+//	        	apiException = new STAPIException(responseCode,JsonStatus.NO_RESPONSE,null);
+//	            throw apiException;
 //	        }
 		    if(inputStream!=null){
 		    	inputStream.close();
@@ -978,17 +980,16 @@ public class STAPI {
 		if(null == is){
 			return null;
 		}
-		StringBuffer rst = new StringBuffer();
-		byte[] buffer = new byte[BUFFERSIZE];
-		int len = 0;
-		try {
-			while ((len = is.read(buffer)) > 0)
-				for (int i = 0; i < len; ++i)
-					rst.append((char)buffer[i]);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+        int   i=-1; 
+        try {
+			while((i=is.read())!=-1){ 
+			baos.write(i); 
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		return rst.toString();
+		} 
+       return baos.toString(); 
 	}
 	
 	private boolean isNull(String s){

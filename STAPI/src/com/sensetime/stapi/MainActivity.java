@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.sensetime.stapi.error.STAPIException;
 import com.sensetime.stapi.http.STAPI;
+import com.sensetime.stapi_key.MyApiKey;
 
 /**
  * 实例DEMO
@@ -26,10 +27,8 @@ public class MainActivity extends Activity {
 	private Bitmap mBitmap;
 	private long mStartTime;
 	
-	#error // 使用时候请替换为自己的apiId和apiSecret
-	private static final String API_KEY = "";
-	private static final String API_SECRET = "";
-	private STAPI mSTAPI = new STAPI(API_KEY, API_SECRET);
+//	使用时候请替换为自己的apiId和apiSecret
+	private STAPI mSTAPI = new STAPI(MyApiKey.MyApiID, MyApiKey.MyApiSecret);
 	
 	private Handler mHandler = new Handler(){
 		public void handleMessage(android.os.Message msg) {

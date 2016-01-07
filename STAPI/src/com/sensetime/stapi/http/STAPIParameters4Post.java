@@ -69,6 +69,11 @@ public class STAPIParameters4Post {
 		return this;
 	}
 	
+	public STAPIParameters4Post setEmotions(boolean withEmotions) {
+		addString("emotions", booleanToString(withEmotions));
+		return this;
+	}
+	
 	public STAPIParameters4Post setAutoRotate(boolean isAutoRotate) {
 		addString("auto_rotate", booleanToString(isAutoRotate));
 		return this;

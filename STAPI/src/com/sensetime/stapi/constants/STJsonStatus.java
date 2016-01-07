@@ -4,7 +4,7 @@ package com.sensetime.stapi.constants;
  * 返回JSON的基本KEY以及STATUS说明(部分)
  *
  */
-public class JsonStatus {
+public class STJsonStatus {
 
 	public static final String DOWNLOAD_TIMEOUT = "网络地址图片获取超时";
 	public static final String CORRUPT_IMAGE = "文件不是图片文件或已经损坏";
@@ -21,5 +21,5 @@ public class JsonStatus {
 	public static final String STATUS_OK = "OK";
 	public static final String STATUS_KEY = "status";
 	public static final String REASON_KEY = "reason";
-	public static final String NO_RESPONSE = "没有响应或者没有使用SenseTime服务器";
+	public static final String NO_RESPONSE = "没有响应或者没有使用linkface服务器";
 }

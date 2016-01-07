@@ -12,6 +12,7 @@ import android.util.Log;
 import com.sensetime.stapi.error.STAPIException;
 import com.sensetime.stapi.http.STAPI;
 import com.sensetime.stapi.http.STAPIParameters4Post;
+import com.sensetime.stapi_key.MyApiKey;
 
 /**
  * 单元测试
@@ -19,10 +20,8 @@ import com.sensetime.stapi.http.STAPIParameters4Post;
  */
 public class TestUnit extends AndroidTestCase {
 
-	#error // 使用时候请填写自己的apiId和apiSecret
-	private static final String API_KEY = "";
-	private static final String API_SECRET = "";
-	private STAPI mSTAPI = new STAPI(API_KEY, API_SECRET);
+//	使用时候请替换为自己的apiId和apiSecret
+	private STAPI mSTAPI = new STAPI(MyApiKey.MyApiID, MyApiKey.MyApiSecret);
 	
 	public void test01InfoApi()  {  
 		try {
@@ -123,6 +122,8 @@ public class TestUnit extends AndroidTestCase {
 			STAPIParameters4Post params= new STAPIParameters4Post();
 			params.setLandmarks106(true);
 			params.setAttributes(true);
+			params.setEmotions(true);
+			params.setAutoRotate(true);
 			params.setUserData("testFaceDetection_Url user data");
 			JSONObject jsonObject = mSTAPI.faceDetection("http://p4.so.qhimg.com/t013cd0a26cd18948ae.jpg",params);
 //			JSONObject jsonObject = mSTAPI.faceDetection("http://img1.3lian.com/2015/w21/2/d/61.jpg",params);
@@ -143,6 +144,7 @@ public class TestUnit extends AndroidTestCase {
 			}else{
 				assertTrue(false);
 			}
+			assertTrue(faceObject.has("emotions"));
 		} catch (STAPIException e) {
 			Log.d("tag", e.toString());
 			assertTrue(false);
@@ -490,6 +492,7 @@ public class TestUnit extends AndroidTestCase {
 			assertNotNull(arrayFacesets);
 			assertTrue(arrayFacesets.length() == 0);
 		} catch (STAPIException e) {
+			assertTrue(false);
 			Log.d("tag", e.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -652,6 +655,50 @@ public class TestUnit extends AndroidTestCase {
 		}
 	}
 	
+	public void test14FaceTraining() {  
+		try {
+			JSONObject jsonObjectJay1 = mSTAPI.faceDetection(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.jay1));
+			JSONObject jsonObjectJay2 = mSTAPI.faceDetection(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.jay2));
+			JSONObject jsonObjectJack = mSTAPI.faceDetection(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.jack));
+			assertEquals(jsonObjectJay1.get("status").toString(), "OK");
+			assertEquals(jsonObjectJay2.get("status").toString(), "OK");
+			assertEquals(jsonObjectJack.get("status").toString(), "OK");
+			JSONArray arrayJay1 = (JSONArray)jsonObjectJay1.get("faces");
+			JSONArray arrayJay2 = (JSONArray)jsonObjectJay2.get("faces");
+			JSONArray arrayJack = (JSONArray)jsonObjectJack.get("faces");
+			JSONObject faceObjectJay1 = (JSONObject)arrayJay1.get(0);
+			JSONObject faceObjectJay2 = (JSONObject)arrayJay2.get(0);
+			JSONObject faceObjectJack = (JSONObject)arrayJack.get(0);
+			String jay1FaceId = faceObjectJay1.getString("face_id");
+			String jay2FaceId = faceObjectJay2.getString("face_id");
+			String jackFaceId = faceObjectJack.getString("face_id");
+			
+			JSONObject jsonObject2 = mSTAPI.personCreate("PJay",new String[]{jay1FaceId,jay2FaceId,jackFaceId},"test user data");
+			assertEquals(jsonObject2.get("status").toString(), "OK");
+			String personId = jsonObject2.getString("person_id");
+			
+			JSONObject jsonObject3 = mSTAPI.facesetCreate("facesetName", new String[]{jay1FaceId,jay2FaceId,jackFaceId}, "facesetCreate user data");
+			assertEquals(jsonObject3.get("status").toString(), "OK");
+			String facesetId = jsonObject3.getString("faceset_id");
+			
+			JSONObject jsonObject4 = mSTAPI.groupCreate("groupName", new String[]{jsonObject2.getString("person_id")}, "testGroupCreate user data");
+			assertEquals(jsonObject4.get("status").toString(), "OK");
+			String groupId = jsonObject4.getString("group_id");
+			
+			JSONObject jsonObject = mSTAPI.faceTraining(
+					new String[]{jay1FaceId,jay2FaceId,jackFaceId},
+					new String[]{personId},
+					new String[]{facesetId},
+					new String[]{groupId});
+			assertEquals(jsonObject.getString("status"), "OK");
+		} catch (STAPIException e) {
+			Log.d("tag", e.toString());
+		}	catch (JSONException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+	
 	public void test14FaceTraining_faceIds() {  
 		try {
 			JSONObject jsonObjectJay1 = mSTAPI.faceDetection(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.jay1));
@@ -748,17 +795,6 @@ public class TestUnit extends AndroidTestCase {
 			assertTrue(false);
 		}
 	}
-	
-	/**
-	 * 暂时不能测试
-	 */
-	/*public void testFaceGrouping()  {  
-		try {
-			mSTAPI.faceGrouping(new String[]{"259689deacca460fb8034ec1574b37da"});
-		} catch (STAPIException e) {
-			Log.d("tag", e.toString());
-		}
-	}*/
 	
 	private String[] getFaceIds(){
 		String jay1FaceId = null;

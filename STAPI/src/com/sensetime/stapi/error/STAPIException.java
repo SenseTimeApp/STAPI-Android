@@ -11,6 +11,7 @@ public class STAPIException extends Exception {
 		this.mHttpResponseCode = httpResponseCode;
 		this.mStatus = status;
 	}
+	
 
 	public Integer getHttpResponseCode() {
 		return mHttpResponseCode;
@@ -20,10 +21,10 @@ public class STAPIException extends Exception {
 		return mStatus;
 	}
 	
+
 	@Override
 	public String toString() {
 		return "STAPIException [mHttpResponseCode=" + mHttpResponseCode
 				+ ", mStatus=" + mStatus + "]";
 	}
-
 }
